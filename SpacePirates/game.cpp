@@ -1,11 +1,23 @@
 #include "game.h"
 
-int playerX = 10;
-int playerY = 28;
+uint8_t playerX = 10;
+uint8_t playerY = 28;
+
+int8_t bulletX[3] = {-1, -1, -1};
+int8_t bulletY[3] = {-1, -1, -1};
 
 void fire()
 {
-
+    for(uint8_t i = 0; i < 3; ++i)
+    {
+        if(bulletX[i] < 0)
+        {
+            sound.tone(NOTE_C7, 50);
+            bulletX[i] = playerX + 16;
+            bulletY[i] = playerY + 4;
+            break;
+        }
+    }
 }
 
 void bomb()
@@ -32,13 +44,36 @@ void input()
         bomb();
 }
 
+void move()
+{
+    // bullets
+    for(uint8_t i = 0; i < 3; ++i)
+    {
+        if(bulletX[i] > 0)
+        {
+            bulletX[i] += 2;
+        }
+    }
+}
+
 void draw()
 {
+    // Player
     arduboy.drawRect(playerX, playerY, 16, 8);
+
+    // bullets
+    for(uint8_t i = 0; i < 3; ++i)
+    {
+        if(bulletX[i] > 0)
+        {
+            arduboy.drawLine(bulletX[i], bulletY[i], bulletX[i] + 4, bulletY[i]);
+        }
+    }
 }
 
 void gamePlay()
 {
     input();
+    move();
     draw();
 }

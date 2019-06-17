@@ -6,6 +6,9 @@ uint8_t playerY = 28;
 int8_t bulletX[3] = {-1, -1, -1};
 int8_t bulletY[3] = {-1, -1, -1};
 
+int8_t bombX = -1;
+int8_t bombY = -1;
+
 void fire()
 {
     for(uint8_t i = 0; i < 3; ++i)
@@ -22,7 +25,12 @@ void fire()
 
 void bomb()
 {
-    gameState = STATE_GAME_OVER;
+    if(bombY < 0)
+    {
+        sound.tone(NOTE_A1, 50);
+        bombX = playerX + 8;
+        bombY = playerY + 8;
+    }
 }
 
 void input()
@@ -54,6 +62,18 @@ void move()
             bulletX[i] += 2;
         }
     }
+
+    // bomb
+    if(bombY > 0 && bombY < 64)
+    {
+        ++bombX;
+        ++bombY;
+    }
+    else if(bombY >= 64)
+    {
+        bombX = -1;
+        bombY = -1;
+    }
 }
 
 void draw()
@@ -68,6 +88,12 @@ void draw()
         {
             arduboy.drawLine(bulletX[i], bulletY[i], bulletX[i] + 4, bulletY[i]);
         }
+    }
+
+    // bomb
+    if(bombY > 0)
+    {
+        arduboy.drawCircle(bombX, bombY, 1);
     }
 }
 
